@@ -1,5 +1,5 @@
-// API Base URL
-const API_BASE_URL = 'http://localhost:8080/api/auth';
+// API Base URL - Updated for Render deployment
+const API_BASE_URL = 'https://spending-h227.onrender.com/api/auth';
 
 // DOM Elements
 const loginForm = document.getElementById('loginForm');
@@ -158,7 +158,7 @@ if (signupForm) {
 function handleGoogleLogin() {
     try {
         // Redirect to OAuth2 authorization endpoint
-        window.location.href = "http://localhost:8080/oauth2/authorization/google";
+        window.location.href = "https://spending-h227.onrender.com/oauth2/authorization/google";
     } catch (error) {
         console.error('Google OAuth2 login error:', error);
         showMessage('Failed to initiate Google login. Please try again.', 'error');
@@ -274,7 +274,7 @@ function initForgotPassword() {
             submitBtn.textContent = 'Sending...';
             
             try {
-                const response = await fetch('http://localhost:8080/api/auth/forgot-password?email=' + encodeURIComponent(email), {
+                const response = await fetch('https://spending-h227.onrender.com/api/auth/forgot-password?email=' + encodeURIComponent(email), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -333,7 +333,7 @@ function initForgotPassword() {
             submitBtn.textContent = 'Resetting...';
             
             try {
-                const response = await fetch('http://localhost:8080/api/auth/reset-password', {
+                const response = await fetch('https://spending-h227.onrender.com/api/auth/reset-password', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

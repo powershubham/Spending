@@ -33,7 +33,16 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String path = request.getServletPath();
 
-        if (path.equals("/api/auth/login") || path.equals("/api/auth/register")) {
+        // ✅ Skip public routes (VERY IMPORTANT)
+        if (
+                path.startsWith("/api/auth") ||   // login/register
+                        path.equals("/") ||
+                        path.equals("/index.html") ||
+                        path.startsWith("/css") ||
+                        path.startsWith("/js") ||
+                        path.startsWith("/images") ||
+                        path.equals("/favicon.ico")
+        ) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -42,11 +51,13 @@ public class JwtFilter extends OncePerRequestFilter {
         String email = null;
         String jwt = null;
 
+        // ✅ Extract JWT token
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwt = authHeader.substring(7);
             email = jwtService.extractEmail(jwt);
         }
 
+        // ✅ Validate and set authentication
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             Optional<User> userOptional = userRepository.findByEmail(email);
