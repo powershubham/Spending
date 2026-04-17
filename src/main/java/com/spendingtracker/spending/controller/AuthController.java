@@ -3,7 +3,9 @@ package com.spendingtracker.spending.controller;
 import com.spendingtracker.spending.dto.*;
 import com.spendingtracker.spending.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -53,8 +55,15 @@ public class AuthController {
 
     @PostMapping("/change-password")
     public ResponseEntity<?> changePassword(
-            @RequestBody ChangePasswordRequest request,
-            Principal principal) {
-        return ResponseEntity.ok(authService.changePassword(request, principal.getName()));
+            @RequestBody ChangePasswordRequest request) {
+
+        String email = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+
+        return ResponseEntity.ok(
+                authService.changePassword(request, email)
+        );
     }
 }

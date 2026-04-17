@@ -35,7 +35,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // ✅ Skip public routes (VERY IMPORTANT)
         if (
-                path.startsWith("/api/auth") ||
                         path.equals("/") ||
                         path.endsWith(".html") ||     // 🔥 IMPORTANT FIX
                         path.endsWith(".js") ||
@@ -73,7 +72,7 @@ public class JwtFilter extends OncePerRequestFilter {
                             new UsernamePasswordAuthenticationToken(
                                     user.getEmail(),
                                     null,
-                                    null
+                                    java.util.Collections.emptyList() // ✅ FIX
                             );
 
                     authToken.setDetails(
