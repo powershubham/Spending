@@ -35,12 +35,13 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // ✅ Skip public routes (VERY IMPORTANT)
         if (
-                path.startsWith("/api/auth") ||   // login/register
+                path.startsWith("/api/auth") ||
                         path.equals("/") ||
-                        path.equals("/index.html") ||
-                        path.startsWith("/css") ||
-                        path.startsWith("/js") ||
-                        path.startsWith("/images") ||
+                        path.endsWith(".html") ||     // 🔥 IMPORTANT FIX
+                        path.endsWith(".js") ||
+                        path.endsWith(".css") ||
+                        path.endsWith(".png") ||
+                        path.endsWith(".jpg") ||
                         path.equals("/favicon.ico")
         ) {
             filterChain.doFilter(request, response);
