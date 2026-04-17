@@ -199,9 +199,14 @@ navItems.forEach(item => {
 // Logout functionality
 if (logoutBtn) {
     logoutBtn.addEventListener('click', () => {
+        // Clear all authentication data
         localStorage.removeItem('token');
         localStorage.removeItem('user');
+        localStorage.removeItem('theme'); // Optional: keep theme preference
+        
         showMessage('Logged out successfully!', 'success');
+        
+        // Redirect to login page after a short delay
         setTimeout(() => {
             window.location.href = 'index.html';
         }, 1000);

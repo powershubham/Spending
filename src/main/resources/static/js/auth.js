@@ -169,14 +169,20 @@ function handleGoogleLogin() {
 function checkAuth() {
     const token = localStorage.getItem('token');
     const currentPage = window.location.pathname.split('/').pop();
-
+    
+    // Only redirect if there's a valid token AND user is on login/signup page
     if (token && (currentPage === 'index.html' || currentPage === 'signup.html' || currentPage === '')) {
+        // Optionally validate token before redirecting
+        // For now, we'll redirect to dashboard
+        console.log('User already logged in, redirecting to dashboard...');
         window.location.href = 'dashboard.html';
     }
 }
 
-// Run auth check
-checkAuth();
+// Run auth check only when needed
+document.addEventListener('DOMContentLoaded', () => {
+    checkAuth();
+});
 
 // Password visibility toggle functionality
 document.addEventListener('DOMContentLoaded', () => {
