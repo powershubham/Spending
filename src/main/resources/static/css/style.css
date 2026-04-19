@@ -132,6 +132,7 @@ body {
     font-size: 14px;
     transition: var(--transition);
     background-color: var(--card-bg);
+    color: var(--text-primary);
 }
 
 .form-group input:focus,
@@ -143,6 +144,23 @@ body {
 
 .form-group input::placeholder {
     color: #9ca3af;
+}
+
+/* Dark mode specific input styles */
+[data-theme="dark"] .form-group input,
+[data-theme="dark"] .form-group select {
+    color: var(--text-primary);
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .form-group input::placeholder,
+[data-theme="dark"] .form-group select::placeholder {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .form-group label {
+    color: var(--text-primary);
 }
 
 /* Button Styles */
@@ -754,7 +772,7 @@ body {
     }
 
     .main-content {
-        padding: 80px 16px 32px;
+        padding: 80px 12px 32px;
     }
 
     .section-header h1 {
@@ -763,113 +781,100 @@ body {
 
     .dashboard-cards {
         grid-template-columns: 1fr;
+        gap: 16px;
     }
 
     .filter-bar {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
         gap: 12px;
+        padding: 12px;
+    }
+
+    .filter-bar label {
+        font-size: 13px;
     }
 
     .filter-select {
         width: 100%;
+        font-size: 13px;
+    }
+
+    /* Improved Mobile Table Layout */
+    .table-container {
+        margin-bottom: 16px;
+        border-radius: 8px;
+        overflow: hidden;
     }
 
     .expenses-table {
         display: block;
-        overflow-x: auto;
         width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     .expenses-table th,
     .expenses-table td {
-        padding: 12px 8px;
-        font-size: 13px;
-        white-space: nowrap;
+        padding: 10px 8px;
+        font-size: 12px;
+        white-space: normal;
+        word-wrap: break-word;
+        max-width: 150px;
     }
 
     .expenses-table th {
         font-size: 11px;
-        letter-spacing: 0.03em;
-    }
-
-    .expenses-table tbody tr {
-        display: flex;
-        flex-direction: column;
-        border-bottom: 1px solid var(--border-color);
-        margin-bottom: 8px;
-        border-radius: 8px;
-        background-color: var(--card-bg);
-    }
-
-    .expenses-table tbody td {
-        border-bottom: none;
-        padding: 8px 12px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .expenses-table tbody td:first-child {
-        border-top-left-radius: 8px;
-        border-top-right-radius: 8px;
-    }
-
-    .expenses-table tbody td:last-child {
-        border-bottom-left-radius: 8px;
-        border-bottom-right-radius: 8px;
-        border-bottom: 1px solid var(--border-color);
-    }
-
-    .expenses-table thead {
-        display: none;
-    }
-
-    .expenses-table tbody td::before {
-        content: attr(data-label);
-        font-weight: 600;
-        color: var(--text-secondary);
-        font-size: 12px;
-        min-width: 80px;
+        letter-spacing: 0.02em;
+        padding: 10px 8px;
     }
 
     .expenses-table .actions {
-        flex-direction: column;
-        gap: 8px;
-        width: 100%;
-        margin-top: 8px;
+        display: flex;
+        gap: 6px;
+        white-space: nowrap;
     }
 
     .expenses-table .actions .btn {
-        width: 100%;
-        justify-content: center;
+        padding: 6px 10px;
+        font-size: 11px;
     }
 
     .form-card {
-        padding: 20px;
+        padding: 20px 16px;
     }
 
     .form-actions {
         flex-direction: column;
+        gap: 12px;
     }
 
-    /* Expense Management Specific Responsive Styles */
-    .table-container {
-        margin-bottom: 16px;
+    .form-actions .btn {
+        width: 100%;
     }
 
+    /* Pagination */
     .pagination {
-        flex-direction: column;
-        gap: 8px;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
     }
 
     .page-info {
-        font-size: 13px;
+        font-size: 12px;
+        order: 0;
+    }
+
+    .pagination .btn {
+        padding: 8px 14px;
+        font-size: 12px;
     }
 
     .btn-outline {
-        padding: 10px 16px;
-        font-size: 13px;
+        padding: 8px 14px;
+        font-size: 12px;
     }
 }
 
