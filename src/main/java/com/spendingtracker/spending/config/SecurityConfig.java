@@ -1,10 +1,12 @@
 package com.spendingtracker.spending.config;
 
 import com.spendingtracker.spending.security.JwtFilter;
+import com.spendingtracker.spending.security.OAuth2SuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.OAuth2ClientDsl;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -24,6 +26,9 @@ public class SecurityConfig {
 
     @Autowired
     private JwtFilter jwtFilter;
+
+    @Autowired
+    private OAuth2SuccessHandler oAuth2SuccessHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -46,13 +51,20 @@ public class SecurityConfig {
                                 "/**/*.jpg",
                                 "/favicon.ico"
                         ).permitAll()
+
                         .requestMatchers(
                                 "/api/auth/login",
                                 "/api/auth/register",
                                 "/api/auth/forgot-password",
-                                "/api/auth/reset-password"
+                                "/api/auth/reset-password",
+                                "/oauth2/**" // 🔥 IMPORTANT
                         ).permitAll()
+
                         .anyRequest().authenticated()
+                )
+
+                .oauth2Login(oauth -> oauth
+                        .successHandler(oAuth2SuccessHandler) // 🔥 IMPORTANT
                 )
 
                 .httpBasic(httpBasic -> httpBasic.disable())
@@ -61,36 +73,6 @@ public class SecurityConfig {
 
         return http.build();
     }
-
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//
-//        CorsConfiguration config = new CorsConfiguration();
-//
-//        config.setAllowedOrigins(List.of(
-//                "http://localhost:5500",
-//                "http://127.0.0.1:5500"
-//        ));
-//
-//        config.setAllowedMethods(List.of(
-//                "GET",
-//                "POST",
-//                "PUT",
-//                "DELETE",
-//                "OPTIONS"
-//        ));
-//
-//        config.setAllowedHeaders(List.of("*"));
-//
-//        config.setAllowCredentials(true);
-//
-//        UrlBasedCorsConfigurationSource source =
-//                new UrlBasedCorsConfigurationSource();
-//
-//        source.registerCorsConfiguration("/**", config);
-//
-//        return source;
-//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
