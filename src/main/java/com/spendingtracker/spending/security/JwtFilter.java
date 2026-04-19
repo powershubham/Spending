@@ -40,6 +40,7 @@ public class JwtFilter extends OncePerRequestFilter {
                         path.startsWith("/login/oauth2") ||
                         path.startsWith("/api/auth") ||
                         path.endsWith(".html") ||
+                        path.equals("/oauth-success.html") ||
                         path.endsWith(".js") ||
                         path.endsWith(".css") ||
                         path.endsWith(".png") ||

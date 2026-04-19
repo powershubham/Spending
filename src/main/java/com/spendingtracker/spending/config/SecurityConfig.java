@@ -60,6 +60,14 @@ public class SecurityConfig {
                                 "/oauth2/**" // 🔥 IMPORTANT
                         ).permitAll()
 
+                        .requestMatchers(
+                                "/",
+                                "/oauth2/**",
+                                "/login/oauth2/**",  // ✅ VERY IMPORTANT
+                                "/api/auth/**",
+                                "/oauth-success.html"
+                        ).permitAll()
+
                         .anyRequest().authenticated()
                 )
 

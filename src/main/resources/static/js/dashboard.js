@@ -124,19 +124,71 @@ function formatDate(dateString) {
 function formatTimeAgo(dateString) {
     if (!dateString) return 'Just now';
     
-    const now = new Date();
-    const date = new Date(dateString);
-    const diffMs = now - date;
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMins / 60);
-    const diffDays = Math.floor(diffHours / 24);
-
-    if (diffMins < 1) return 'Just now';
-    if (diffMins < 60) return `${diffMins} min ago`;
-    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-    if (diffDays < 30) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+    // Parse the date string and handle different formats
+    let date;
+    if (typeof dateString === 'string') {
+        // Handle ISO format and other common formats
+        // Replace space with 'T' if it looks like ISO format without T separator
+        const normalizedDateStr = dateString.replace(/(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})/, '$1T$2');
+        date = new Date(normalizedDateStr);
+    } else {
+        date = new Date(dateString);
+    }
     
-    return formatDate(dateString);
+    if (isNaN(date.getTime())) {
+        console.warn('Invalid date string:', dateString);
+        return 'Unknown';
+    }
+    
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    
+    // Handle future dates (clock skew or timezone issues)
+    if (diffMs < 0) {
+        return 'Just now';
+    }
+    
+    const diffSeconds = Math.floor(diffMs / 1000);
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    const diffWeeks = Math.floor(diffDays / 7);
+    const diffMonths = Math.floor(diffDays / 30.44); // Average days per month
+    const diffYears = Math.floor(diffDays / 365.25);
+
+    if (diffSeconds < 5) return 'Just now';
+    if (diffSeconds < 60) return `${diffSeconds} sec ago`;
+    if (diffMins < 60) return `${diffMins} min ago`;
+    if (diffHours < 24) return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+    if (diffDays < 7) return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+    if (diffWeeks < 4) return `${diffWeeks} week${diffWeeks !== 1 ? 's' : ''} ago`;
+    if (diffMonths < 12) return `${diffMonths} month${diffMonths !== 1 ? 's' : ''} ago`;
+    
+    return `${diffYears} year${diffYears !== 1 ? 's' : ''} ago`;
+}
+
+// Utility function to format date with time
+function formatDateTime(dateString) {
+    if (!dateString) return '';
+    
+    let date;
+    if (typeof dateString === 'string') {
+        const normalizedDateStr = dateString.replace(/(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})/, '$1T$2');
+        date = new Date(normalizedDateStr);
+    } else {
+        date = new Date(dateString);
+    }
+    
+    if (isNaN(date.getTime())) return '';
+    
+    const options = { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    };
+    return date.toLocaleDateString('en-US', options);
 }
 
 // Mobile menu toggle
@@ -750,6 +802,8 @@ function createPdfContent(rows) {
 window.showMessage = showMessage;
 window.formatCurrency = formatCurrency;
 window.formatDate = formatDate;
+window.formatTimeAgo = formatTimeAgo;
+window.formatDateTime = formatDateTime;
 window.getAuthHeaders = getAuthHeaders;
 window.API_BASE_URL = API_BASE_URL;
 window.checkAuth = checkAuth;

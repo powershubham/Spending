@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spending Tracker - Authentication Successful</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .oauth-success-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .oauth-success-card {
+            background: white;
+            border-radius: 16px;
+            padding: 48px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            animation: scaleIn 0.5s ease-out;
+        }
+
+        @keyframes scaleIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .oauth-success-card h1 {
+            color: #111827;
+            margin-bottom: 12px;
+            font-size: 24px;
+        }
+
+        .oauth-success-card p {
+            color: #6b7280;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+
+        .loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid #e5e7eb;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .error-icon {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .error-message {
+            color: #ef4444;
+            background: #fef2f2;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="oauth-success-container">
+        <div class="oauth-success-card" id="successCard">
+            <div class="loading-spinner" id="loadingSpinner"></div>
+            <p id="statusMessage">Processing authentication...</p>
+        </div>
+    </div>
+
+    <script>
+        // OAuth Success Handler
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get the token from URL query parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+
+            const successCard = document.getElementById('successCard');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const statusMessage = document.getElementById('statusMessage');
+
+            if (token) {
+                // Store the token in localStorage
+                localStorage.setItem('token', token);
+
+                // Try to decode JWT to get user info (optional)
+                try {
+                    const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+                    if (tokenPayload.sub || tokenPayload.email || tokenPayload.name) {
+                        localStorage.setItem('user', JSON.stringify({
+                            email: tokenPayload.email || tokenPayload.sub,
+                            name: tokenPayload.name || tokenPayload.given_name || tokenPayload.email,
+                            firstName: tokenPayload.given_name || tokenPayload.name?.split(' ')[0] || tokenPayload.email?.split('@')[0]
+                        }));
+                    }
+                } catch (e) {
+                    // JWT decoding failed, but token is still valid
+                    console.log('Could not decode JWT payload, but token is stored');
+                }
+
+                // Show success message
+                successCard.innerHTML = `
+                    <div class="success-icon">✓</div>
+                    <h1>Authentication Successful!</h1>
+                    <p>You have been successfully logged in. Redirecting to dashboard...</p>
+                    <div class="loading-spinner"></div>
+                `;
+
+                // Redirect to dashboard after a short delay
+                setTimeout(function() {
+                    window.location.href = 'dashboard.html';
+                }, 1500);
+            } else {
+                // No token found - show error
+                successCard.innerHTML = `
+                    <div class="success-icon error-icon">✕</div>
+                    <h1>Authentication Failed</h1>
+                    <div class="error-message">
+                        No authentication token was received. Please try logging in again.
+                    </div>
+                    <button class="btn" onclick="window.location.href='index.html'">
+                        Go to Login
+                    </button>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
