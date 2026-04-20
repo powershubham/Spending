@@ -81,12 +81,10 @@ public class AuthService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Check old password
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
             throw new RuntimeException("Old password is incorrect");
         }
 
-        // Encode new password
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
 
         userRepository.save(user);

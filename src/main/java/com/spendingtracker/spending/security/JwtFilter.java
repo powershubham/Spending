@@ -33,7 +33,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String path = request.getServletPath();
 
-        // 🔥 Skip OAuth + public routes
         if (
                 path.equals("/") ||
                         path.startsWith("/oauth2") ||

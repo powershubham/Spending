@@ -142,7 +142,8 @@
                         localStorage.setItem('user', JSON.stringify({
                             email: tokenPayload.email || tokenPayload.sub,
                             name: tokenPayload.name || tokenPayload.given_name || tokenPayload.email,
-                            firstName: tokenPayload.given_name || tokenPayload.name?.split(' ')[0] || tokenPayload.email?.split('@')[0]
+                            firstName: tokenPayload.given_name || tokenPayload.name?.split(' ')[0] || tokenPayload.email?.split('@')[0],
+                            loginMethod: 'google'
                         }));
                     }
                 } catch (e) {

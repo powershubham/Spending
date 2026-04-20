@@ -28,6 +28,9 @@ function checkAuth() {
     // Display welcome message with user's first name
     displayWelcomeMessage();
     
+    // Hide Change Password button for Google OAuth users
+    handleGoogleOAuthUI();
+    
     return true;
 }
 
@@ -46,6 +49,25 @@ function displayWelcomeMessage() {
             console.error('Error parsing user data:', error);
             userFirstNameEl.textContent = 'User';
         }
+    }
+}
+
+// Hide Change Password button for Google OAuth users
+function handleGoogleOAuthUI() {
+    try {
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+            const user = JSON.parse(userStr);
+            // If user logged in via Google, hide the Change Password button
+            if (user.loginMethod === 'google') {
+                const changePasswordBtn = document.getElementById('changePasswordBtn');
+                if (changePasswordBtn) {
+                    changePasswordBtn.style.display = 'none';
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Error checking login method:', error);
     }
 }
 
@@ -480,6 +502,42 @@ async function loadTotalTransactions() {
 }
 
 // Load recent activity
+// ✅ Time Ago Formatter (Production Ready)
+function formatTimeAgo(timestamp) {
+    if (!timestamp) return "Just now";
+
+    const now = new Date();
+    const past = new Date(timestamp);
+
+    // Handle invalid date
+    if (isNaN(past)) return "Just now";
+
+    const seconds = Math.floor((now - past) / 1000);
+
+    if (seconds < 10) return "Just now";
+    if (seconds < 60) return `${seconds} sec ago`;
+
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes} min ago`;
+
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+
+    const days = Math.floor(hours / 24);
+    if (days < 7) return `${days} day${days > 1 ? 's' : ''} ago`;
+
+    const weeks = Math.floor(days / 7);
+    if (weeks < 4) return `${weeks} week${weeks > 1 ? 's' : ''} ago`;
+
+    const months = Math.floor(days / 30);
+    if (months < 12) return `${months} month${months > 1 ? 's' : ''} ago`;
+
+    const years = Math.floor(days / 365);
+    return `${years} year${years > 1 ? 's' : ''} ago`;
+}
+
+
+// ✅ Load Recent Activity
 async function loadRecentActivity() {
     try {
         const response = await fetch(`${API_BASE_URL}/expenses/recent`, {
@@ -493,6 +551,7 @@ async function loadRecentActivity() {
         const data = await response.json();
         const activities = Array.isArray(data) ? data : (data.content || []);
 
+        // ✅ Empty State
         if (activities.length === 0) {
             recentActivityBody.innerHTML = `
                 <tr>
@@ -508,29 +567,27 @@ async function loadRecentActivity() {
             return;
         }
 
+        // ✅ Render Activities
         recentActivityBody.innerHTML = activities.map(activity => {
-            // Determine action type (assuming API returns an action field)
+
+            // Action Mapping
             let actionIcon = '✅';
             let actionText = 'Added';
-            
+
             if (activity.action) {
-                if (activity.action.toLowerCase() === 'update' || activity.action.toLowerCase() === 'edit') {
+                const action = activity.action.toLowerCase();
+
+                if (action === 'update' || action === 'edit') {
                     actionIcon = '✏️';
                     actionText = 'Updated';
-                } else if (activity.action.toLowerCase() === 'delete') {
+                } else if (action === 'delete') {
                     actionIcon = '❌';
                     actionText = 'Deleted';
-                } else if (activity.action.toLowerCase() === 'add' || activity.action.toLowerCase() === 'create') {
-                    actionIcon = '✅';
-                    actionText = 'Added';
                 }
             }
 
-            // Format time (assuming activity has a timestamp field)
-            let timeAgo = 'Just now';
-            if (activity.timestamp || activity.time || activity.date) {
-                timeAgo = formatTimeAgo(activity.timestamp || activity.time || activity.date);
-            }
+            // ✅ Time Ago (ONLY timestamp)
+            const timeAgo = formatTimeAgo(activity.timestamp);
 
             return `
                 <tr>
@@ -546,6 +603,10 @@ async function loadRecentActivity() {
         console.error('Error loading recent activity:', error);
     }
 }
+
+
+// ✅ Optional: Auto refresh every 1 minute (like real apps)
+setInterval(loadRecentActivity, 60000);
 
 // Load recent expenses (fallback for old format)
 async function loadRecentExpenses() {
